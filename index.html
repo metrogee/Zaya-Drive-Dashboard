@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rovr — Driving School Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface-2: #f0efe9;
+  --border: #e4e2da;
+  --border-strong: #cac8be;
+  --text-primary: #1a1916;
+  --text-secondary: #6b6a64;
+  --text-tertiary: #9e9c95;
+  --accent: #2d4a3e;
+  --accent-light: #e8f0ed;
+  --accent-mid: #4a7c66;
+  --purple: #4b3f8a;
+  --purple-light: #eceaf8;
+  --amber: #8a5c1a;
+  --amber-light: #fdf0dc;
+  --red: #8a2020;
+  --red-light: #fce8e8;
+  --blue: #1a3d6b;
+  --blue-light: #e8eef8;
+  --teal: #1a5c52;
+  --teal-light: #e0f0ed;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --sidebar-w: 220px;
+  --topbar-h: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ─── LAYOUT ─── */
+.app { display: flex; min-height: 100vh; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+.logo-wrap {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.logo-mark svg { width: 18px; height: 18px; }
+
+.logo-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.school-name {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+.nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 8px 4px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  transition: all 0.12s;
+  margin-bottom: 1px;
+  position: relative;
+}
+
+.nav-item:hover { background: var(--surface-2); color: var(--text-primary); }
+
+.nav-item.active {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 1px 7px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.nav-badge.warn { background: var(--amber-light); color: var(--amber); }
+.nav-badge.danger { background: var(--red-light); color: var(--red); }
+
+.sidebar-footer {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.user-row {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.avatar.purple { background: var(--purple); }
+.avatar.amber { background: var(--amber); }
+.avatar.blue { background: var(--blue); }
+.avatar.teal { background: var(--teal); }
+.avatar.red { background: var(--red); }
+
+.user-info .name { font-size: 12.5px; font-weight: 500; color: var(--text-primary); }
+.user-info .role { font-size: 11px; color: var(--text-tertiary); }
+
+/* ─── MAIN AREA ─── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--text-primary); flex: 1; }
+.topbar-date { font-size: 12px; color: var(--text-tertiary); }
+
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.12s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: #1e3629; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border-strong);
+}
+.btn-outline:hover { background: var(--surface-2); }
+
+.btn svg { width: 14px; height: 14px; }
+
+/* ─── PAGE CONTENT ─── */
+.page { display: none; padding: 28px; }
+.page.active { display: block; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+/* ─── METRIC CARDS ─── */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.metric {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.metric-label { font-size: 12px; color: var(--text-tertiary); margin-bottom: 8px; }
+.metric-val { font-size: 26px; font-weight: 600; color: var(--text-primary); line-height: 1; }
+.metric-sub { font-size: 11.5px; color: var(--text-tertiary); margin-top: 5px; }
+.metric-up { color: var(--teal); }
+.metric-down { color: var(--red); }
+.metric-accent { border-left: 3px solid var(--accent); }
+.metric-amber { border-left: 3px solid #c4872b; }
+.metric-teal { border-left: 3px solid #2a8a78; }
+.metric-red { border-left: 3px solid #c43c3c; }
+
+/* ─── GRID LAYOUTS ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.main-aside { display: grid; grid-template-columns: 1fr 340px; gap: 14px; }
+
+/* ─── TABLE ─── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.data-table th:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface-2); }
+.data-table .muted { color: var(--text-secondary); font-size: 12px; }
+
+/* ─── PILLS / BADGES ─── */
+.pill {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.pill-green { background: var(--teal-light); color: var(--teal); }
+.pill-blue { background: var(--blue-light); color: var(--blue); }
+.pill-amber { background: var(--amber-light); color: var(--amber); }
+.pill-red { background: var(--red-light); color: var(--red); }
+.pill-purple { background: var(--purple-light); color: var(--purple); }
+.pill-gray { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border); }
+.pill-accent { background: var(--accent-light); color: var(--accent); }
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap { background: var(--surface-2); border-radius: 20px; height: 7px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 20px; background: var(--accent); }
+.progress-fill.amber { background: #c4872b; }
+.progress-fill.red { background: #c43c3c; }
+
+/* ─── LIST ROW ─── */
+.list-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.list-row:last-child { border-bottom: none; }
+.list-row-main { flex: 1; color: var(--text-primary); }
+.list-row-sub { font-size: 12px; color: var(--text-secondary); }
+
+/* ─── AVATAR CIRCLE ─── */
+.av-sm {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ─── ALERT STRIP ─── */
+.alert-strip {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.alert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.alert-amber { background: var(--amber-light); color: var(--amber); }
+.alert-amber .alert-dot { background: var(--amber); }
+.alert-red { background: var(--red-light); color: var(--red); }
+.alert-red .alert-dot { background: var(--red); }
+.alert-green { background: var(--teal-light); color: var(--teal); }
+.alert-green .alert-dot { background: var(--teal); }
+
+/* ─── SECTION HEADER ─── */
+.section-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-hd h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.link-btn { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; }
+
+/* ─── STAT ROW ─── */
+.stat-row {
+  display: flex; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--text-secondary); }
+.stat-val { font-weight: 500; color: var(--text-primary); }
+.stat-val.danger { color: var(--red); }
+.stat-val.success { color: var(--teal); }
+
+/* ─── CALENDAR ─── */
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-day-name { font-size: 10px; font-weight: 600; text-align: center; color: var(--text-tertiary); padding: 6px 0; text-transform: uppercase; }
+.cal-day {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12.5px; border-radius: 6px; cursor: pointer;
+  color: var(--text-secondary);
+}
+.cal-day:hover { background: var(--surface-2); }
+.cal-day.today { background: var(--accent); color: white; font-weight: 600; }
+.cal-day.has-event { position: relative; color: var(--text-primary); font-weight: 500; }
+.cal-day.has-event::after { content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; background: var(--accent-mid); border-radius: 50%; }
+.cal-day.other-month { color: var(--text-tertiary); }
+
+/* ─── TOGGLE ─── */
+.seg-control {
+  display: inline-flex;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+.seg-btn {
+  padding: 5px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+}
+.seg-btn.active { background: var(--surface); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+/* ─── SEARCH INPUT ─── */
+.search-wrap {
+  position: relative;
+  display: inline-flex; align-items: center;
+}
+.search-wrap svg { position: absolute; left: 10px; width: 14px; height: 14px; color: var(--text-tertiary); pointer-events: none; }
+.search-input {
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--surface);
+  width: 220px;
+  outline: none;
+}
+.search-input:focus { border-color: var(--accent); }
+
+/* ─── OVERVIEW SPECIFIC ─── */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.lesson-time { font-size: 12px; color: var(--text-tertiary); min-width: 52px; font-family: 'DM Mono', monospace; }
+
+/* ─── UTILISATION BAR ─── */
+.util-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.util-row:last-child { border-bottom: none; }
+.util-name { font-size: 13px; width: 120px; flex-shrink: 0; color: var(--text-primary); }
+.util-bar { flex: 1; }
+.util-count { font-size: 12px; color: var(--text-secondary); min-width: 32px; text-align: right; font-family: 'DM Mono', monospace; }
+
+/* ─── SETTINGS ─── */
+.settings-section { margin-bottom: 28px; }
+.settings-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.settings-section .section-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.field input, .field select {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--surface);
+  outline: none;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); }
+
+/* ─── TOGGLE SWITCH ─── */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-info .t-label { font-size: 13.5px; font-weight: 500; }
+.toggle-info .t-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.toggle { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: var(--border-strong);
+  border-radius: 20px; cursor: pointer;
+  transition: 0.2s;
+}
+.toggle input:checked + .toggle-track { background: var(--accent); }
+.toggle-track::after {
+  content: ''; position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; top: 3px;
+  background: white; border-radius: 50%;
+  transition: 0.2s;
+}
+.toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+
+/* ─── REPORTS CHART ─── */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 120px; padding-top: 10px; }
+.bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+.bar-fill-wrap { width: 100%; background: var(--surface-2); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; flex: 1; }
+.bar-fill-inner { width: 100%; background: var(--accent-mid); border-radius: 4px 4px 0 0; transition: height 0.3s; }
+.bar-label { font-size: 10px; color: var(--text-tertiary); }
+.bar-val { font-size: 10px; font-weight: 600; color: var(--text-secondary); }
+
+/* ─── EMPTY STATE ─── */
+.empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 20px; color: var(--text-tertiary); }
+.empty svg { width: 36px; height: 36px; }
+.empty p { font-size: 13px; text-align: center; }
+
+/* ─── VEHICLE CARD ─── */
+.vehicle-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.vehicle-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.vehicle-icon {
+  width: 40px; height: 40px;
+  background: var(--accent-light);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.vehicle-icon svg { width: 22px; height: 22px; color: var(--accent); }
+.vehicle-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.vehicle-reg { font-size: 12px; color: var(--text-tertiary); font-family: 'DM Mono', monospace; margin-bottom: 10px; }
+.vehicle-type { font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .metrics { grid-template-columns: repeat(2,1fr); }
+  .main-aside { grid-template-columns: 1fr; }
+  .vehicle-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ─── SIDEBAR ─── -->
+<nav class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="7" stroke="white" stroke-width="1.8"/>
+          <circle cx="9" cy="9" r="2.5" fill="white"/>
+          <path d="M9 2v2M9 14v2M2 9h2M14 9h2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">Rovr</div>
+        <div class="school-name">Ikeja Driving School</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-section-label">Main</div>
+
+    <div class="nav-item active" onclick="showPage('overview', this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+      Overview
+    </div>
+
+    <div class="nav-item" onclick="showPage('students', this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Students
+      <span class="nav-badge">84</span>
+    </div>
+
+    <div class="nav-item" onclick="showPage('schedule', this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v3M11 1.5v3M2 7.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Schedule
+      <span class="nav-badge warn">3</span>
+    </div>
+
+    <div class="nav-item" onclick="showPage('payments', this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 7h13" stroke="currentColor" stroke-width="1.4"/><rect x="4" y="9" width="3" height="1.5" rx="0.5" fill="currentColor"/></svg>
+      Payments
+    </div>
+
+    <div class="nav-item" onclick="showPage('progress', this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Progress
+    </div>
+
+    <div class="nav-section-label">Manage</div>
+
+    <div class="nav-item" onclick="showPage('instructors', this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="5.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13.5c0-2.5 1.8-4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M9.5 13.5h5M12 8v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Instructors
+    </div>
+
+    <div class="nav-item" onclick="showPage('vehicles', this)">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M3 10V7l2-4h6l2 4v3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M1.5 10h13v2.5a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V10z" stroke="currentColor" stroke-width="1.4"/><circle cx="5" cy="11.5" r="1" fill="currentColor"/><circle cx="11" cy="11.5" r="1" fill="currentColor"/></svg>
+      Vehicles
+    </div>
+
+    <div class="nav-item" onclick="showPage('reports', this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 10V8M8 10V6M11 10V7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Reports
+    </div>
+
+    <div class="nav-section-label">System</div>
+
+    <div class="nav-item" onclick="showPage('settings', this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Settings
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="avatar">SA</div>
+      <div class="user-info">
+        <div class="name">Super Admin</div>
+        <div class="role">School owner</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+
+<!-- ══════════════════════════════════
+     OVERVIEW
+══════════════════════════════════ -->
+<div class="page active" id="page-overview">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Overview</div>
+      <div class="topbar-date">Friday, 2 May 2025</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Register student
+      </button>
+    </div>
+  </div>
+  <div class="page" id="page-overview" style="display:block;padding:28px;">
+    <div class="metrics">
+      <div class="metric metric-accent">
+        <div class="metric-label">Students enrolled</div>
+        <div class="metric-val">84</div>
+        <div class="metric-sub metric-up">+11 this month</div>
+      </div>
+      <div class="metric metric-teal">
+        <div class="metric-label">Revenue — May</div>
+        <div class="metric-val">₦1.2M</div>
+        <div class="metric-sub">of ₦1.58M expected</div>
+      </div>
+      <div class="metric metric-amber">
+        <div class="metric-label">Outstanding balance</div>
+        <div class="metric-val">₦380K</div>
+        <div class="metric-sub metric-down">14 students overdue</div>
+      </div>
+      <div class="metric metric-red">
+        <div class="metric-label">Lessons this week</div>
+        <div class="metric-val">37 / 42</div>
+        <div class="metric-sub">5 missed this week</div>
+      </div>
+    </div>
+
+    <div class="main-aside">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <div class="card">
+          <div class="section-hd"><h3>Today's lessons</h3><span class="pill pill-accent">5 sessions</span></div>
+          <div class="list-row"><span class="lesson-time">8:00 AM</span><div class="av-sm">CO</div><div class="list-row-main">Chukwuemeka Obi<br><span class="list-row-sub">Mr. Okonkwo · Manual</span></div><span class="pill pill-green">Checked in</span></div>
+          <div class="list-row"><span class="lesson-time">9:30 AM</span><div class="av-sm" style="background:var(--blue-light);color:var(--blue);">AB</div><div class="list-row-main">Aisha Bello<br><span class="list-row-sub">Mrs. Salami · Automatic</span></div><span class="pill pill-blue">Scheduled</span></div>
+          <div class="list-row"><span class="lesson-time">11:00 AM</span><div class="av-sm" style="background:var(--red-light);color:var(--red);">TA</div><div class="list-row-main">Tunde Adeyemi<br><span class="list-row-sub">Mr. Okonkwo · Manual</span></div><span class="pill pill-red">Missed</span></div>
+          <div class="list-row"><span class="lesson-time">2:00 PM</span><div class="av-sm" style="background:var(--purple-light);color:var(--purple);">NE</div><div class="list-row-main">Ngozi Eze<br><span class="list-row-sub">Mr. Bello-James · Manual</span></div><span class="pill pill-blue">Scheduled</span></div>
+          <div class="list-row"><span class="lesson-time">3:30 PM</span><div class="av-sm" style="background:var(--amber-light);color:var(--amber);">FO</div><div class="list-row-main">Femi Okafor<br><span class="list-row-sub">Mrs. Salami · Automatic</span></div><span class="pill pill-blue">Scheduled</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Instructor utilisation — this week</div>
+          <div class="util-row"><span class="util-name">Mr. Okonkwo</span><div class="util-bar"><div class="progress-wrap"><div class="progress-fill" style="width:90%;"></div></div></div><span class="util-count">9/10</span></div>
+          <div class="util-row"><span class="util-name">Mrs. Salami</span><div class="util-bar"><div class="progress-wrap"><div class="progress-fill" style="width:60%;"></div></div></div><span class="util-count">6/10</span></div>
+          <div class="util-row"><span class="util-name">Mr. Bello-James</span><div class="util-bar"><div class="progress-wrap"><div class="progress-fill amber" style="width:40%;"></div></div></div><span class="util-count">4/10</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="card-title">Alerts</div>
+          <div class="alert-strip alert-red"><div class="alert-dot"></div>Tunde Adeyemi missed today's 11 AM session — reminder sent via WhatsApp</div>
+          <div class="alert-strip alert-amber"><div class="alert-dot"></div>3 students have balances over ₦30,000 — payment follow-up due</div>
+          <div class="alert-strip alert-green"><div class="alert-dot"></div>Aisha Bello completed all 10 lessons — mark as Ready for Test</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Today's payments</div>
+          <div class="stat-row"><span class="stat-label">Cash</span><span class="stat-val">₦45,000</span></div>
+          <div class="stat-row"><span class="stat-label">Bank transfer</span><span class="stat-val">₦80,000</span></div>
+          <div class="stat-row"><span class="stat-label">POS</span><span class="stat-val">₦20,000</span></div>
+          <div class="stat-row"><span class="stat-label" style="font-weight:600;color:var(--text-primary);">Total collected</span><span class="stat-val success">₦145,000</span></div>
+          <div class="stat-row"><span class="stat-label">Still outstanding</span><span class="stat-val danger">₦380,000</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Near completion</div>
+          <div class="list-row"><div class="list-row-main">Aisha Bello</div><span style="font-size:12px;color:var(--text-secondary);margin-right:8px;">10/10</span><span class="pill pill-green">Done</span></div>
+          <div class="list-row"><div class="list-row-main">Chukwuemeka Obi</div><span style="font-size:12px;color:var(--text-secondary);margin-right:8px;">9/10</span><span class="pill pill-amber">1 left</span></div>
+          <div class="list-row"><div class="list-row-main">Ngozi Eze</div><span style="font-size:12px;color:var(--text-secondary);margin-right:8px;">8/10</span><span class="pill pill-blue">2 left</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STUDENTS
+══════════════════════════════════ -->
+<div class="page" id="page-students">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Students</div>
+      <div class="topbar-date">84 enrolled · 3 pending registration</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="search-wrap">
+        <svg viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.4"/><path d="M10 10l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input class="search-input" placeholder="Search students…" />
+      </div>
+      <div class="seg-control">
+        <button class="seg-btn active">All</button>
+        <button class="seg-btn">Unpaid</button>
+        <button class="seg-btn">Active</button>
+        <button class="seg-btn">Done</button>
+      </div>
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Register
+      </button>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="metrics" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
+      <div class="metric metric-accent"><div class="metric-label">Total enrolled</div><div class="metric-val">84</div><div class="metric-sub">All time</div></div>
+      <div class="metric metric-teal"><div class="metric-label">Fully paid</div><div class="metric-val">54</div><div class="metric-sub">64% of students</div></div>
+      <div class="metric metric-amber"><div class="metric-label">Part-paid</div><div class="metric-val">16</div></div>
+      <div class="metric metric-red"><div class="metric-label">Unpaid</div><div class="metric-val">14</div><div class="metric-sub">Follow-up needed</div></div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Student ID</th>
+            <th>Course package</th>
+            <th>Lessons</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="av-sm">AB</div><div><div style="font-weight:500;">Aisha Bello</div><div class="muted">+234 801 234 5678</div></div></div></td>
+            <td class="muted" style="font-family:'DM Mono',monospace;font-size:12px;">DR-2025-0048</td>
+            <td>10-lesson beginner</td>
+            <td><div>10 / 10</div><div style="margin-top:4px;"><div class="progress-wrap" style="width:80px;"><div class="progress-fill" style="width:100%;"></div></div></div></td>
+            <td><span class="pill pill-green">Fully paid</span></td>
+            <td><span class="pill pill-accent">Ready for test</span></td>
+            <td><button class="btn btn-outline" style="padding:5px 10px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="av-sm" style="background:var(--blue-light);color:var(--blue);">CO</div><div><div style="font-weight:500;">Chukwuemeka Obi</div><div class="muted">+234 802 345 6789</div></div></div></td>
+            <td class="muted" style="font-family:'DM Mono',monospace;font-size:12px;">DR-2025-0046</td>
+            <td>10-lesson beginner</td>
+            <td><div>9 / 10</div><div style="margin-top:4px;"><div class="progress-wrap" style="width:80px;"><div class="progress-fill" style="width:90%;"></div></div></div></td>
+            <td><span class="pill pill-green">Fully paid</span></td>
+            <td><span class="pill pill-blue">In progress</span></td>
+            <td><button class="btn btn-outline" style="padding:5px 10px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="av-sm" style="background:var(--red-light);color:var(--red);">TA</div><div><div style="font-weight:500;">Tunde Adeyemi</div><div class="muted">+234 803 456 7890</div></div></div></td>
+            <td class="muted" style="font-family:'DM Mono',monospace;font-size:12px;">DR-2025-0041</td>
+            <td>15-lesson standard</td>
+            <td><div>6 / 15</div><div style="margin-top:4px;"><div class="progress-wrap" style="width:80px;"><div class="progress-fill amber" style="width:40%;"></div></div></div></td>
+            <td><span class="pill pill-amber">Part-paid</span></td>
+            <td><span class="pill pill-blue">In progress</span></td>
+            <td><button class="btn btn-outline" style="padding:5px 10px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="av-sm" style="background:var(--purple-light);color:var(--purple);">NE</div><div><div style="font-weight:500;">Ngozi Eze</div><div class="muted">+234 804 567 8901</div></div></div></td>
+            <td class="muted" style="font-family:'DM Mono',monospace;font-size:12px;">DR-2025-0039</td>
+            <td>10-lesson beginner</td>
+            <td><div>8 / 10</div><div style="margin-top:4px;"><div class="progress-wrap" style="width:80px;"><div class="progress-fill" style="width:80%;"></div></div></div></td>
+            <td><span class="pill pill-green">Fully paid</span></td>
+            <td><span class="pill pill-blue">In progress</span></td>
+            <td><button class="btn btn-outline" style="padding:5px 10px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="av-sm" style="background:var(--amber-light);color:var(--amber);">FO</div><div><div style="font-weight:500;">Femi Okafor</div><div class="muted">+234 805 678 9012</div></div></div></td>
+            <td class="muted" style="font-family:'DM Mono',monospace;font-size:12px;">DR-2025-0037</td>
+            <td>10-lesson beginner</td>
+            <td><div>3 / 10</div><div style="margin-top:4px;"><div class="progress-wrap" style="width:80px;"><div class="progress-fill amber" style="width:30%;"></div></div></div></td>
+            <td><span class="pill pill-red">Unpaid</span></td>
+            <td><span class="pill pill-blue">In progress</span></td>
+            <td><button class="btn btn-outline" style="padding:5px 10px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="av-sm" style="background:var(--teal-light);color:var(--teal);">SA</div><div><div style="font-weight:500;">Sade Afolabi</div><div class="muted">+234 806 789 0123</div></div></div></td>
+            <td class="muted" style="font-family:'DM Mono',monospace;font-size:12px;">DR-2025-0033</td>
+            <td>15-lesson standard</td>
+            <td><div>15 / 15</div><div style="margin-top:4px;"><div class="progress-wrap" style="width:80px;"><div class="progress-fill" style="width:100%;"></div></div></div></td>
+            <td><span class="pill pill-green">Fully paid</span></td>
+            <td><span class="pill pill-purple">Certificate issued</span></td>
+            <td><button class="btn btn-outline" style="padding:5px 10px;font-size:12px;">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCHEDULE
+══════════════════════════════════ -->
+<div class="page" id="page-schedule">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Schedule</div>
+      <div class="topbar-date">May 2025 · 3 conflicts need attention</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="seg-control">
+        <button class="seg-btn active">Day</button>
+        <button class="seg-btn">Week</button>
+        <button class="seg-btn">Month</button>
+      </div>
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Book lesson
+      </button>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="main-aside">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="section-hd"><h3>Today — Friday 2 May</h3><span class="pill pill-blue">5 sessions</span></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Time</th><th>Student</th><th>Instructor</th><th>Vehicle</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12px;">08:00</td><td><div style="font-weight:500;">Chukwuemeka Obi</div></td><td>Mr. Okonkwo</td><td><span class="pill pill-gray">Manual · LKJ 341 HH</span></td><td><span class="pill pill-green">Checked in</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12px;">09:30</td><td><div style="font-weight:500;">Aisha Bello</div></td><td>Mrs. Salami</td><td><span class="pill pill-gray">Auto · LKJ 892 AB</span></td><td><span class="pill pill-blue">Scheduled</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12px;">11:00</td><td><div style="font-weight:500;">Tunde Adeyemi</div></td><td>Mr. Okonkwo</td><td><span class="pill pill-gray">Manual · LKJ 341 HH</span></td><td><span class="pill pill-red">Missed</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Reschedule</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12px;">14:00</td><td><div style="font-weight:500;">Ngozi Eze</div></td><td>Mr. Bello-James</td><td><span class="pill pill-gray">Manual · LKJ 210 CK</span></td><td><span class="pill pill-blue">Scheduled</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:12px;">15:30</td><td><div style="font-weight:500;">Femi Okafor</div></td><td>Mrs. Salami</td><td><span class="pill pill-gray">Auto · LKJ 892 AB</span></td><td><span class="pill pill-blue">Scheduled</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Conflicts & attention needed</div>
+          <div class="alert-strip alert-red"><div class="alert-dot"></div>Tunde Adeyemi — missed 11 AM, not yet rescheduled</div>
+          <div class="alert-strip alert-amber"><div class="alert-dot"></div>Mr. Okonkwo fully booked Tue–Thu next week — 2 pending requests</div>
+          <div class="alert-strip alert-amber"><div class="alert-dot"></div>Femi Okafor has not booked his next session (last was 8 days ago)</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="section-hd" style="margin-bottom:12px;">
+            <h3>May 2025</h3>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-outline" style="padding:4px 8px;">‹</button>
+              <button class="btn btn-outline" style="padding:4px 8px;">›</button>
+            </div>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day-name">Su</div><div class="cal-day-name">Mo</div><div class="cal-day-name">Tu</div><div class="cal-day-name">We</div><div class="cal-day-name">Th</div><div class="cal-day-name">Fr</div><div class="cal-day-name">Sa</div>
+            <div class="cal-day other-month">27</div><div class="cal-day other-month">28</div><div class="cal-day other-month">29</div><div class="cal-day other-month">30</div><div class="cal-day has-event">1</div><div class="cal-day today">2</div><div class="cal-day has-event">3</div>
+            <div class="cal-day has-event">4</div><div class="cal-day has-event">5</div><div class="cal-day has-event">6</div><div class="cal-day has-event">7</div><div class="cal-day has-event">8</div><div class="cal-day has-event">9</div><div class="cal-day">10</div>
+            <div class="cal-day has-event">11</div><div class="cal-day has-event">12</div><div class="cal-day has-event">13</div><div class="cal-day has-event">14</div><div class="cal-day has-event">15</div><div class="cal-day has-event">16</div><div class="cal-day">17</div>
+            <div class="cal-day has-event">18</div><div class="cal-day has-event">19</div><div class="cal-day has-event">20</div><div class="cal-day has-event">21</div><div class="cal-day has-event">22</div><div class="cal-day has-event">23</div><div class="cal-day">24</div>
+            <div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Instructor availability today</div>
+          <div class="list-row"><div class="av-sm">MO</div><div class="list-row-main">Mr. Okonkwo<div class="list-row-sub">2 sessions remaining</div></div><span class="pill pill-green">Available</span></div>
+          <div class="list-row"><div class="av-sm" style="background:var(--blue-light);color:var(--blue);">MS</div><div class="list-row-main">Mrs. Salami<div class="list-row-sub">1 session remaining</div></div><span class="pill pill-green">Available</span></div>
+          <div class="list-row"><div class="av-sm" style="background:var(--amber-light);color:var(--amber);">BJ</div><div class="list-row-main">Mr. Bello-James<div class="list-row-sub">Fully booked today</div></div><span class="pill pill-red">Unavailable</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAYMENTS
+══════════════════════════════════ -->
+<div class="page" id="page-payments">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Payments</div>
+      <div class="topbar-date">May 2025 · ₦1.2M collected</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="seg-control">
+        <button class="seg-btn active">All</button>
+        <button class="seg-btn">Cash</button>
+        <button class="seg-btn">Transfer</button>
+        <button class="seg-btn">POS</button>
+      </div>
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Record payment
+      </button>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="metrics">
+      <div class="metric metric-teal"><div class="metric-label">Collected — May</div><div class="metric-val">₦1.2M</div><div class="metric-sub metric-up">+₦145K today</div></div>
+      <div class="metric metric-red"><div class="metric-label">Outstanding</div><div class="metric-val">₦380K</div><div class="metric-sub">14 students</div></div>
+      <div class="metric metric-accent"><div class="metric-label">Cash received</div><div class="metric-val">₦620K</div></div>
+      <div class="metric metric-amber"><div class="metric-label">Bank / POS</div><div class="metric-val">₦580K</div></div>
+    </div>
+
+    <div class="main-aside">
+      <div class="card" style="padding:0;">
+        <div style="padding:16px 20px 0;"><div class="section-hd"><h3>Recent payments</h3><span class="link-btn">Export CSV</span></div></div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Student</th><th>Amount</th><th>Method</th><th>Date</th><th>Balance after</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td><div style="font-weight:500;">Chukwuemeka Obi</div><div class="muted">DR-2025-0046</div></td><td style="font-weight:600;color:var(--teal);">₦50,000</td><td><span class="pill pill-blue">Cash</span></td><td class="muted">2 May 2025</td><td><span class="pill pill-green">₦0 — Paid</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Receipt</button></td></tr>
+            <tr><td><div style="font-weight:500;">Ngozi Eze</div><div class="muted">DR-2025-0039</div></td><td style="font-weight:600;color:var(--teal);">₦80,000</td><td><span class="pill pill-accent">Transfer</span></td><td class="muted">1 May 2025</td><td><span class="pill pill-green">₦0 — Paid</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Receipt</button></td></tr>
+            <tr><td><div style="font-weight:500;">Tunde Adeyemi</div><div class="muted">DR-2025-0041</div></td><td style="font-weight:600;color:var(--teal);">₦30,000</td><td><span class="pill pill-purple">POS</span></td><td class="muted">30 Apr 2025</td><td><span class="pill pill-amber">₦45,000 left</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Receipt</button></td></tr>
+            <tr><td><div style="font-weight:500;">Aisha Bello</div><div class="muted">DR-2025-0048</div></td><td style="font-weight:600;color:var(--teal);">₦75,000</td><td><span class="pill pill-blue">Cash</span></td><td class="muted">28 Apr 2025</td><td><span class="pill pill-green">₦0 — Paid</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Receipt</button></td></tr>
+            <tr><td><div style="font-weight:500;">Femi Okafor</div><div class="muted">DR-2025-0037</div></td><td style="font-weight:600;color:var(--teal);">₦0</td><td><span class="pill pill-red">Unpaid</span></td><td class="muted">—</td><td><span class="pill pill-red">₦50,000 owed</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Send reminder</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="card-title">Today's summary</div>
+          <div class="stat-row"><span class="stat-label">Cash</span><span class="stat-val">₦45,000</span></div>
+          <div class="stat-row"><span class="stat-label">Bank transfer</span><span class="stat-val">₦80,000</span></div>
+          <div class="stat-row"><span class="stat-label">POS</span><span class="stat-val">₦20,000</span></div>
+          <div class="stat-row"><span class="stat-label" style="font-weight:600;color:var(--text-primary);">Total today</span><span class="stat-val success">₦145,000</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Overdue — needs follow-up</div>
+          <div class="list-row"><div class="list-row-main">Femi Okafor<div class="list-row-sub">₦50,000 owed</div></div><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Remind</button></div>
+          <div class="list-row"><div class="list-row-main">Tunde Adeyemi<div class="list-row-sub">₦45,000 owed</div></div><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Remind</button></div>
+          <div class="list-row"><div class="list-row-main">Bola Akande<div class="list-row-sub">₦75,000 owed</div></div><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Remind</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PROGRESS
+══════════════════════════════════ -->
+<div class="page" id="page-progress">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Progress tracker</div>
+      <div class="topbar-date">3 students ready to test · 1 certificate issued</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="seg-control">
+        <button class="seg-btn active">All students</button>
+        <button class="seg-btn">Near done</button>
+        <button class="seg-btn">Falling behind</button>
+      </div>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="metrics">
+      <div class="metric metric-accent"><div class="metric-label">Active students</div><div class="metric-val">77</div></div>
+      <div class="metric metric-teal"><div class="metric-label">Ready for test</div><div class="metric-val">3</div><div class="metric-sub">Awaiting admin review</div></div>
+      <div class="metric metric-amber"><div class="metric-label">Falling behind</div><div class="metric-val">9</div><div class="metric-sub">No lesson in 10+ days</div></div>
+      <div class="metric" style="border-left:3px solid var(--purple);"><div class="metric-label">Certificates issued</div><div class="metric-val">5</div></div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div style="padding:16px 20px 0;"><div class="section-hd"><h3>All students — lesson progress</h3><span class="link-btn">Export</span></div></div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Student</th><th>Package</th><th>Lessons done</th><th>Progress</th><th>Last lesson</th><th>Stage</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av-sm">AB</div><span style="font-weight:500;">Aisha Bello</span></div></td>
+            <td class="muted">10-lesson</td>
+            <td>10 / 10</td>
+            <td><div class="progress-wrap" style="width:100px;"><div class="progress-fill" style="width:100%;"></div></div></td>
+            <td class="muted">1 May</td>
+            <td><span class="pill pill-accent">Ready for test</span></td>
+            <td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Mark cert</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av-sm" style="background:var(--blue-light);color:var(--blue);">CO</div><span style="font-weight:500;">Chukwuemeka Obi</span></div></td>
+            <td class="muted">10-lesson</td>
+            <td>9 / 10</td>
+            <td><div class="progress-wrap" style="width:100px;"><div class="progress-fill" style="width:90%;"></div></div></td>
+            <td class="muted">2 May</td>
+            <td><span class="pill pill-blue">In progress</span></td>
+            <td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av-sm" style="background:var(--purple-light);color:var(--purple);">NE</div><span style="font-weight:500;">Ngozi Eze</span></div></td>
+            <td class="muted">10-lesson</td>
+            <td>8 / 10</td>
+            <td><div class="progress-wrap" style="width:100px;"><div class="progress-fill" style="width:80%;"></div></div></td>
+            <td class="muted">2 May</td>
+            <td><span class="pill pill-blue">In progress</span></td>
+            <td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av-sm" style="background:var(--amber-light);color:var(--amber);">TA</div><span style="font-weight:500;">Tunde Adeyemi</span></div></td>
+            <td class="muted">15-lesson</td>
+            <td>6 / 15</td>
+            <td><div class="progress-wrap" style="width:100px;"><div class="progress-fill amber" style="width:40%;"></div></div></td>
+            <td class="muted">28 Apr</td>
+            <td><span class="pill pill-amber">Falling behind</span></td>
+            <td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Follow up</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av-sm" style="background:var(--red-light);color:var(--red);">FO</div><span style="font-weight:500;">Femi Okafor</span></div></td>
+            <td class="muted">10-lesson</td>
+            <td>3 / 10</td>
+            <td><div class="progress-wrap" style="width:100px;"><div class="progress-fill red" style="width:30%;"></div></div></td>
+            <td class="muted">22 Apr</td>
+            <td><span class="pill pill-red">At risk</span></td>
+            <td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Follow up</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av-sm" style="background:var(--teal-light);color:var(--teal);">SA</div><span style="font-weight:500;">Sade Afolabi</span></div></td>
+            <td class="muted">15-lesson</td>
+            <td>15 / 15</td>
+            <td><div class="progress-wrap" style="width:100px;"><div class="progress-fill" style="width:100%;"></div></div></td>
+            <td class="muted">25 Apr</td>
+            <td><span class="pill pill-purple">Certificate issued</span></td>
+            <td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     INSTRUCTORS
+══════════════════════════════════ -->
+<div class="page" id="page-instructors">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Instructors</div>
+      <div class="topbar-date">3 active instructors</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add instructor
+      </button>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="metrics">
+      <div class="metric metric-accent"><div class="metric-label">Active instructors</div><div class="metric-val">3</div></div>
+      <div class="metric metric-teal"><div class="metric-label">Lessons this week</div><div class="metric-val">37</div></div>
+      <div class="metric metric-amber"><div class="metric-label">Avg utilisation</div><div class="metric-val">63%</div></div>
+      <div class="metric" style="border-left:3px solid var(--purple);"><div class="metric-label">Students assigned</div><div class="metric-val">84</div></div>
+    </div>
+
+    <div class="three-col">
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div class="avatar" style="width:44px;height:44px;font-size:14px;">MO</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Mr. Okonkwo</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Senior instructor</div>
+          </div>
+          <span class="pill pill-green" style="margin-left:auto;">Active</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Phone</span><span class="stat-val" style="font-size:12px;">+234 801 111 2222</span></div>
+        <div class="stat-row"><span class="stat-label">Vehicle types</span><span class="stat-val" style="font-size:12px;">Manual</span></div>
+        <div class="stat-row"><span class="stat-label">This week</span><span class="stat-val">9 / 10 slots</span></div>
+        <div style="margin-top:10px;">
+          <div class="progress-wrap"><div class="progress-fill" style="width:90%;"></div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Schedule</button>
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Edit</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div class="avatar blue" style="width:44px;height:44px;font-size:14px;">MS</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Mrs. Salami</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Instructor</div>
+          </div>
+          <span class="pill pill-green" style="margin-left:auto;">Active</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Phone</span><span class="stat-val" style="font-size:12px;">+234 802 333 4444</span></div>
+        <div class="stat-row"><span class="stat-label">Vehicle types</span><span class="stat-val" style="font-size:12px;">Automatic</span></div>
+        <div class="stat-row"><span class="stat-label">This week</span><span class="stat-val">6 / 10 slots</span></div>
+        <div style="margin-top:10px;">
+          <div class="progress-wrap"><div class="progress-fill" style="width:60%;"></div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Schedule</button>
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Edit</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div class="avatar amber" style="width:44px;height:44px;font-size:14px;">BJ</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Mr. Bello-James</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Instructor</div>
+          </div>
+          <span class="pill pill-amber" style="margin-left:auto;">Low usage</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Phone</span><span class="stat-val" style="font-size:12px;">+234 803 555 6666</span></div>
+        <div class="stat-row"><span class="stat-label">Vehicle types</span><span class="stat-val" style="font-size:12px;">Manual</span></div>
+        <div class="stat-row"><span class="stat-label">This week</span><span class="stat-val">4 / 10 slots</span></div>
+        <div style="margin-top:10px;">
+          <div class="progress-wrap"><div class="progress-fill amber" style="width:40%;"></div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Schedule</button>
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0;">
+      <div class="card-title">Lesson history — all instructors</div>
+      <table class="data-table">
+        <thead><tr><th>Instructor</th><th>Student</th><th>Date</th><th>Vehicle</th><th>Outcome</th></tr></thead>
+        <tbody>
+          <tr><td>Mr. Okonkwo</td><td>Chukwuemeka Obi</td><td class="muted">2 May</td><td class="muted">LKJ 341 HH</td><td><span class="pill pill-green">Completed</span></td></tr>
+          <tr><td>Mr. Okonkwo</td><td>Tunde Adeyemi</td><td class="muted">2 May</td><td class="muted">LKJ 341 HH</td><td><span class="pill pill-red">Missed</span></td></tr>
+          <tr><td>Mrs. Salami</td><td>Aisha Bello</td><td class="muted">1 May</td><td class="muted">LKJ 892 AB</td><td><span class="pill pill-green">Completed</span></td></tr>
+          <tr><td>Mr. Bello-James</td><td>Ngozi Eze</td><td class="muted">1 May</td><td class="muted">LKJ 210 CK</td><td><span class="pill pill-green">Completed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     VEHICLES
+══════════════════════════════════ -->
+<div class="page" id="page-vehicles">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Vehicles</div>
+      <div class="topbar-date">3 vehicles · 2 available today</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add vehicle
+      </button>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="metrics" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+      <div class="metric metric-accent"><div class="metric-label">Total vehicles</div><div class="metric-val">3</div></div>
+      <div class="metric metric-teal"><div class="metric-label">Available today</div><div class="metric-val">2</div></div>
+      <div class="metric metric-red"><div class="metric-label">In use now</div><div class="metric-val">1</div></div>
+      <div class="metric metric-amber"><div class="metric-label">Manual / Auto</div><div class="metric-val">2 / 1</div></div>
+    </div>
+
+    <div class="vehicle-grid">
+      <div class="vehicle-card">
+        <div class="vehicle-icon">
+          <svg viewBox="0 0 22 22" fill="none"><path d="M4 13V9l3-6h8l3 6v4" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M2 13h18v3.5a.5.5 0 0 1-.5.5h-17a.5.5 0 0 1-.5-.5V13z" stroke="var(--accent)" stroke-width="1.6"/><circle cx="7" cy="16" r="1.2" fill="var(--accent)"/><circle cx="15" cy="16" r="1.2" fill="var(--accent)"/></svg>
+        </div>
+        <div class="vehicle-name">Toyota Corolla</div>
+        <div class="vehicle-reg">LKJ 341 HH</div>
+        <div class="vehicle-type">Manual transmission</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="pill pill-green">Available</span>
+          <span style="font-size:12px;color:var(--text-secondary);">Assigned: Mr. Okonkwo</span>
+        </div>
+        <div class="stat-row" style="padding:6px 0;"><span class="stat-label">Sessions this week</span><span class="stat-val">9</span></div>
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">View schedule</button>
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Edit</button>
+        </div>
+      </div>
+
+      <div class="vehicle-card">
+        <div class="vehicle-icon" style="background:var(--blue-light);">
+          <svg viewBox="0 0 22 22" fill="none"><path d="M4 13V9l3-6h8l3 6v4" stroke="var(--blue)" stroke-width="1.6" stroke-linejoin="round"/><path d="M2 13h18v3.5a.5.5 0 0 1-.5.5h-17a.5.5 0 0 1-.5-.5V13z" stroke="var(--blue)" stroke-width="1.6"/><circle cx="7" cy="16" r="1.2" fill="var(--blue)"/><circle cx="15" cy="16" r="1.2" fill="var(--blue)"/></svg>
+        </div>
+        <div class="vehicle-name">Honda Accord</div>
+        <div class="vehicle-reg">LKJ 892 AB</div>
+        <div class="vehicle-type">Automatic transmission</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="pill pill-green">Available</span>
+          <span style="font-size:12px;color:var(--text-secondary);">Assigned: Mrs. Salami</span>
+        </div>
+        <div class="stat-row" style="padding:6px 0;"><span class="stat-label">Sessions this week</span><span class="stat-val">6</span></div>
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">View schedule</button>
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Edit</button>
+        </div>
+      </div>
+
+      <div class="vehicle-card">
+        <div class="vehicle-icon" style="background:var(--amber-light);">
+          <svg viewBox="0 0 22 22" fill="none"><path d="M4 13V9l3-6h8l3 6v4" stroke="var(--amber)" stroke-width="1.6" stroke-linejoin="round"/><path d="M2 13h18v3.5a.5.5 0 0 1-.5.5h-17a.5.5 0 0 1-.5-.5V13z" stroke="var(--amber)" stroke-width="1.6"/><circle cx="7" cy="16" r="1.2" fill="var(--amber)"/><circle cx="15" cy="16" r="1.2" fill="var(--amber)"/></svg>
+        </div>
+        <div class="vehicle-name">Kia Rio</div>
+        <div class="vehicle-reg">LKJ 210 CK</div>
+        <div class="vehicle-type">Manual transmission</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="pill pill-amber">In use</span>
+          <span style="font-size:12px;color:var(--text-secondary);">Assigned: Mr. Bello-James</span>
+        </div>
+        <div class="stat-row" style="padding:6px 0;"><span class="stat-label">Sessions this week</span><span class="stat-val">4</span></div>
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">View schedule</button>
+          <button class="btn btn-outline" style="flex:1;font-size:12px;">Edit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     REPORTS
+══════════════════════════════════ -->
+<div class="page" id="page-reports">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Reports</div>
+      <div class="topbar-date">January – May 2025</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="seg-control">
+        <button class="seg-btn active">This year</button>
+        <button class="seg-btn">Last 30 days</button>
+        <button class="seg-btn">Custom</button>
+      </div>
+      <button class="btn btn-outline">Export PDF</button>
+    </div>
+  </div>
+  <div style="padding:28px;">
+    <div class="metrics">
+      <div class="metric metric-teal"><div class="metric-label">Total revenue (YTD)</div><div class="metric-val">₦4.8M</div><div class="metric-sub metric-up">+22% vs last year</div></div>
+      <div class="metric metric-accent"><div class="metric-label">Students enrolled (YTD)</div><div class="metric-val">84</div></div>
+      <div class="metric metric-amber"><div class="metric-label">Total lessons done</div><div class="metric-val">612</div></div>
+      <div class="metric metric-red"><div class="metric-label">No-show rate</div><div class="metric-val">11.9%</div><div class="metric-sub">Target: below 10%</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Monthly revenue — 2025</div>
+        <div class="bar-chart">
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:55%;"></div></div><div class="bar-val">₦820K</div><div class="bar-label">Jan</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:68%;"></div></div><div class="bar-val">₦980K</div><div class="bar-label">Feb</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:75%;"></div></div><div class="bar-val">₦1.1M</div><div class="bar-label">Mar</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:85%;"></div></div><div class="bar-val">₦1.2M</div><div class="bar-label">Apr</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:82%;background:var(--accent);"></div></div><div class="bar-val">₦1.2M</div><div class="bar-label">May</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Monthly enrolments — 2025</div>
+        <div class="bar-chart">
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:50%;background:#4a7c66;"></div></div><div class="bar-val">12</div><div class="bar-label">Jan</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:60%;background:#4a7c66;"></div></div><div class="bar-val">15</div><div class="bar-label">Feb</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:75%;background:#4a7c66;"></div></div><div class="bar-val">18</div><div class="bar-label">Mar</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:85%;background:#4a7c66;"></div></div><div class="bar-val">22</div><div class="bar-label">Apr</div></div>
+          <div class="bar-col"><div class="bar-fill-wrap"><div class="bar-fill-inner" style="height:45%;background:#4a7c66;"></div></div><div class="bar-val">11</div><div class="bar-label">May</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Instructor performance</div>
+        <table class="data-table">
+          <thead><tr><th>Instructor</th><th>Lessons</th><th>No-shows</th><th>Utilisation</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:500;">Mr. Okonkwo</td><td>264</td><td class="muted">18</td><td><span class="pill pill-green">88%</span></td></tr>
+            <tr><td style="font-weight:500;">Mrs. Salami</td><td>198</td><td class="muted">22</td><td><span class="pill pill-blue">72%</span></td></tr>
+            <tr><td style="font-weight:500;">Mr. Bello-James</td><td>150</td><td class="muted">34</td><td><span class="pill pill-amber">55%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Revenue by payment method</div>
+        <div class="stat-row"><span class="stat-label">Cash</span><span class="stat-val">₦2.2M <span style="font-size:11px;color:var(--text-tertiary);">(46%)</span></span></div>
+        <div class="stat-row"><span class="stat-label">Bank transfer</span><span class="stat-val">₦1.8M <span style="font-size:11px;color:var(--text-tertiary);">(37%)</span></span></div>
+        <div class="stat-row"><span class="stat-label">POS</span><span class="stat-val">₦0.8M <span style="font-size:11px;color:var(--text-tertiary);">(17%)</span></span></div>
+        <div style="margin-top:14px;">
+          <div style="display:flex;height:12px;border-radius:20px;overflow:hidden;">
+            <div style="width:46%;background:var(--accent);"></div>
+            <div style="width:37%;background:var(--accent-mid);"></div>
+            <div style="width:17%;background:var(--accent-light);border:1px solid var(--border);"></div>
+          </div>
+          <div style="display:flex;gap:14px;margin-top:8px;">
+            <span style="font-size:11px;color:var(--text-secondary);">■ Cash</span>
+            <span style="font-size:11px;color:var(--text-secondary);">■ Transfer</span>
+            <span style="font-size:11px;color:var(--text-secondary);">■ POS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SETTINGS
+══════════════════════════════════ -->
+<div class="page" id="page-settings">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Settings</div>
+      <div class="topbar-date">School configuration</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary">Save changes</button>
+    </div>
+  </div>
+  <div style="padding:28px;max-width:820px;">
+
+    <div class="settings-section card" style="margin-bottom:14px;">
+      <h3>School profile</h3>
+      <div class="section-desc">This information appears on receipts and student-facing documents.</div>
+      <div class="field-row">
+        <div class="field"><label>School name</label><input type="text" value="Ikeja Driving School" /></div>
+        <div class="field"><label>Phone number</label><input type="text" value="+234 801 000 1234" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Email address</label><input type="email" value="admin@ikejadrive.ng" /></div>
+        <div class="field"><label>Address</label><input type="text" value="14 Allen Avenue, Ikeja, Lagos" /></div>
+      </div>
+    </div>
+
+    <div class="settings-section card" style="margin-bottom:14px;">
+      <h3>Course packages</h3>
+      <div class="section-desc">Define the lesson packages your school offers and their prices.</div>
+      <table class="data-table" style="margin-bottom:12px;">
+        <thead><tr><th>Package name</th><th>No. of lessons</th><th>Price (₦)</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>10-lesson beginner</td><td>10</td><td>₦50,000</td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+          <tr><td>15-lesson standard</td><td>15</td><td>₦75,000</td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+          <tr><td>20-lesson intensive</td><td>20</td><td>₦95,000</td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+        </tbody>
+      </table>
+      <button class="btn btn-outline">+ Add package</button>
+    </div>
+
+    <div class="settings-section card" style="margin-bottom:14px;">
+      <h3>Operating hours</h3>
+      <div class="section-desc">Set the days and hours when lessons can be booked.</div>
+      <div class="field-row">
+        <div class="field"><label>Opening time</label><input type="text" value="7:00 AM" /></div>
+        <div class="field"><label>Closing time</label><input type="text" value="5:00 PM" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Lesson duration (minutes)</label><select><option>60</option><option>45</option><option>90</option><option>120</option></select></div>
+        <div class="field"><label>Operating days</label><input type="text" value="Monday – Saturday" /></div>
+      </div>
+    </div>
+
+    <div class="settings-section card" style="margin-bottom:14px;">
+      <h3>Automated notifications</h3>
+      <div class="section-desc">Choose which WhatsApp/SMS reminders are sent automatically.</div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="t-label">Lesson reminder to student</div><div class="t-desc">Sent a configurable number of hours before each session</div></div>
+        <label class="toggle"><input type="checkbox" checked /><div class="toggle-track"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="t-label">No-show alert to admin</div><div class="t-desc">Notifies you when a student misses a session</div></div>
+        <label class="toggle"><input type="checkbox" checked /><div class="toggle-track"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="t-label">Outstanding payment reminder</div><div class="t-desc">Sent to students with an unpaid balance</div></div>
+        <label class="toggle"><input type="checkbox" checked /><div class="toggle-track"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="t-label">Course completion message</div><div class="t-desc">Sent to student and admin when all lessons are done</div></div>
+        <label class="toggle"><input type="checkbox" checked /><div class="toggle-track"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="t-label">Check-in notification to instructor</div><div class="t-desc">Alerts instructor when student checks in for their lesson</div></div>
+        <label class="toggle"><input type="checkbox" /><div class="toggle-track"></div></label>
+      </div>
+    </div>
+
+    <div class="settings-section card" style="margin-bottom:14px;">
+      <h3>Staff accounts & roles</h3>
+      <div class="section-desc">Manage who has access to Rovr and what they can do.</div>
+      <table class="data-table" style="margin-bottom:12px;">
+        <thead><tr><th>Name</th><th>Role</th><th>Email / Phone</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;">School Owner</td><td><span class="pill pill-accent">Super admin</span></td><td class="muted">admin@ikejadrive.ng</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+          <tr><td style="font-weight:500;">Adaeze Nwosu</td><td><span class="pill pill-blue">Staff / Receptionist</span></td><td class="muted">+234 802 000 0001</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+          <tr><td style="font-weight:500;">Mr. Okonkwo</td><td><span class="pill pill-purple">Instructor</span></td><td class="muted">+234 801 111 2222</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline" style="padding:4px 9px;font-size:12px;">Edit</button></td></tr>
+        </tbody>
+      </table>
+      <button class="btn btn-outline">+ Add staff member</button>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end .main -->
+</div><!-- end .app -->
+
+<script>
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('page-' + id);
+  if (target) target.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+}
+
+document.querySelectorAll('.seg-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const group = this.closest('.seg-control');
+    group.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
